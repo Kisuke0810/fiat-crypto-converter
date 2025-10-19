@@ -11,7 +11,7 @@ const dict = {
     result: '結果',
     errorFetch: 'ごめんね、今は価格を取れなかったよ。少し待ってもう一度お試しください。',
     unsupported: 'この銘柄の価格は今は取得できないみたい。',
-    note: '※参考計算です。実際の購入レートやスプレッド・手数料により差が出ます。一部の銘柄は未対応の場合があります。',
+    note: '参考計算です。実際の購入レートやスプレッド・手数料により差が出ます。一部の銘柄は未対応の場合があります。',
     lang: '言語',
   },
   en: {
@@ -33,4 +33,3 @@ let current: Lang = 'ja';
 export const setLang = (l: Lang) => { current = l; };
 export const getLang = () => current;
 export const t = (k: keyof typeof dict['ja']) => dict[current][k];
-
