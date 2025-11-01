@@ -2,8 +2,8 @@ import React from 'react';
 import { Fiat, CoinSymbol } from '../types';
 import { TOKENS, findToken } from '../lib/tokens';
 import { getPrice } from '../lib/pricing';
-import { formatCrypto } from '../lib/number';
-import { t, getLang } from '../i18n';
+import { t } from '../i18n';
+import { formatAmount, ensureConsistentUnits } from '../utils/formatter';
 
 type Mode = 'fiatToCoin' | 'coinToFiat';
 const FIATS: { value: Fiat; label: string }[] = [
@@ -20,7 +20,8 @@ export default function Converter() {
   const [result, setResult] = React.useState<string>('—');
   const [loading, setLoading] = React.useState(false);
   const [err, setErr] = React.useState<string | null>(null);
-  const [lastUpdate, setLastUpdate] = React.useState<{ ts: number; source: 'CoinGecko' | 'CMC' } | null>(null);
+  const [lastUpdated, setLastUpdated] = React.useState<string | null>(null);
+  const [lastSource, setLastSource] = React.useState<'CoinGecko' | 'CMC' | null>(null);
 
   const compute = React.useCallback(async () => {
     setErr(null);
@@ -34,16 +35,26 @@ export default function Converter() {
     if (!pr.ok || !pr.price?.[fiat]) { setErr(t('errorFetch')); return; }
     const price = pr.price[fiat];
     const out = mode === 'fiatToCoin' ? val / price : val * price;
-    // 更新情報
+    // 更新情報（HH:mm + ソース）
     const srcLabel: 'CoinGecko' | 'CMC' = (pr.source === 'coingecko' ? 'CoinGecko' : pr.source === 'cmc' ? 'CMC' : 'CoinGecko');
-    if (pr.fetchedAt) setLastUpdate({ ts: pr.fetchedAt, source: srcLabel });
-    // 結果の整形（最大6桁・末尾0削除）
-    const displayAmount = formatCrypto(out, 6);
-    setResult(
-      mode === 'fiatToCoin'
-        ? `${displayAmount} ${coin}`
-        : `${getLang() === 'ja' ? '¥' : ''}${displayAmount} ${fiat.toUpperCase()}`
-    );
+    if (pr.fetchedAt) {
+      const d = new Date(pr.fetchedAt);
+      const hh = d.getHours().toString().padStart(2, '0');
+      const mm = d.getMinutes().toString().padStart(2, '0');
+      setLastUpdated(`${hh}:${mm}`);
+      setLastSource(srcLabel);
+    }
+    // 出力通貨に統一したフォーマット
+    const outputCurrency = (mode === 'fiatToCoin' ? coin : fiat.toUpperCase()) as string;
+    const formatted = formatAmount(out, outputCurrency, 'code');
+    try {
+      ensureConsistentUnits(outputCurrency, formatted);
+      setErr(null);
+      setResult(formatted);
+    } catch {
+      setErr('表示を一時停止しました（通貨表示の不一致を検知）。ページを更新して再試行してください。');
+      setResult('—');
+    }
   }, [amount, coin, fiat, mode]);
 
   React.useEffect(() => { const id = setTimeout(compute, 120); return () => clearTimeout(id); }, [compute]);
@@ -52,7 +63,10 @@ export default function Converter() {
     return () => clearInterval(id);
   }, [compute]);
 
-  const onCopy = async () => { try { await navigator.clipboard.writeText(result); } catch (_) {} };
+  const inputCurrency = mode === 'fiatToCoin' ? fiat.toUpperCase() : coin;
+  const outputCurrency = mode === 'fiatToCoin' ? coin : fiat.toUpperCase();
+
+  const onCopy = async () => { try { await navigator.clipboard.writeText(result); } catch {} };
 
   return (
     <div className="card">
@@ -84,14 +98,14 @@ export default function Converter() {
       </div>
       <div className="result">
         <button className="copy-btn" type="button" aria-label="結果をコピー" title="コピー" onClick={onCopy} disabled={!result || result==='—'}>⧉</button>
-        <div className="label">{t('result')}</div>
+        <div className="label">{t('result')}（{Number(amount).toLocaleString()} {inputCurrency} → {outputCurrency}）</div>
         <div className="value">{loading ? '…' : result}</div>
-        {lastUpdate && (
-          <div className="result-updated">更新: {new Date(lastUpdate.ts).toLocaleTimeString('ja-JP', { hour: '2-digit', minute: '2-digit' })}（{lastUpdate.source}）</div>
+        {lastUpdated && lastSource && (
+          <div className="result-updated">更新: {lastUpdated}（{lastSource}）</div>
         )}
         {err && <div className="error">{err}</div>}
+        <div className="note">{t('note')}</div>
       </div>
-      <p className="note">{t('note')}</p>
     </div>
   );
 }
