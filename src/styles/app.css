@@ -50,9 +50,12 @@ select, input{
   padding:12px; border:1px solid var(--border); border-radius:12px; background:#fff; font-size:16px;
   outline-color: var(--accent);
 }
-.result{ margin-top:16px; padding:16px; border:2px dashed var(--accent-weak); border-radius:12px; background:#fff; }
+.result{ margin-top:16px; padding:16px; border:2px dashed var(--accent-weak); border-radius:12px; background:#fff; position:relative; }
 .result .label{ fontサイズ:12px; color:var(--muted); }
 .result .value{ font-size:24px; font-weight:900; margin-top:6px; letter-spacing:.2px; }
+.copy-btn{ position:absolute; top:8px; right:8px; border:1px solid var(--border); background:#fff; border-radius:8px; padding:6px 8px; line-height:1; cursor:pointer; box-shadow:0 1px 2px rgba(0,0,0,.06); }
+.copy-btn:disabled{ opacity:.5; cursor:not-allowed; }
+.result-updated{ margin-top:8px; font-size:.85rem; color: rgba(0,0,0,.55); }
 .error{ margin-top:8px; color:#b3261e; font-size:13px; }
 .note{ margin:14px 0 0; color:var(--muted); font-size:12px; text-align:center; }
 

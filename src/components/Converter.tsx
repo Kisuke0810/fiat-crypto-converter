@@ -2,7 +2,7 @@ import React from 'react';
 import { Fiat, CoinSymbol } from '../types';
 import { TOKENS, findToken } from '../lib/tokens';
 import { getPrice } from '../lib/pricing';
-import { toFixedFloor } from '../lib/number';
+import { formatCrypto } from '../lib/number';
 import { t, getLang } from '../i18n';
 
 type Mode = 'fiatToCoin' | 'coinToFiat';
@@ -20,6 +20,7 @@ export default function Converter() {
   const [result, setResult] = React.useState<string>('—');
   const [loading, setLoading] = React.useState(false);
   const [err, setErr] = React.useState<string | null>(null);
+  const [lastUpdate, setLastUpdate] = React.useState<{ ts: number; source: 'CoinGecko' | 'CMC' } | null>(null);
 
   const compute = React.useCallback(async () => {
     setErr(null);
@@ -33,10 +34,15 @@ export default function Converter() {
     if (!pr.ok || !pr.price?.[fiat]) { setErr(t('errorFetch')); return; }
     const price = pr.price[fiat];
     const out = mode === 'fiatToCoin' ? val / price : val * price;
+    // 更新情報
+    const srcLabel: 'CoinGecko' | 'CMC' = (pr.source === 'coingecko' ? 'CoinGecko' : pr.source === 'cmc' ? 'CMC' : 'CoinGecko');
+    if (pr.fetchedAt) setLastUpdate({ ts: pr.fetchedAt, source: srcLabel });
+    // 結果の整形（最大6桁・末尾0削除）
+    const displayAmount = formatCrypto(out, 6);
     setResult(
       mode === 'fiatToCoin'
-        ? `${toFixedFloor(out)} ${coin}`
-        : `${getLang() === 'ja' ? '¥' : ''}${toFixedFloor(out)} ${fiat.toUpperCase()}`
+        ? `${displayAmount} ${coin}`
+        : `${getLang() === 'ja' ? '¥' : ''}${displayAmount} ${fiat.toUpperCase()}`
     );
   }, [amount, coin, fiat, mode]);
 
@@ -45,6 +51,8 @@ export default function Converter() {
     const id = setInterval(() => { if (document.visibilityState === 'visible') compute(); }, 30000);
     return () => clearInterval(id);
   }, [compute]);
+
+  const onCopy = async () => { try { await navigator.clipboard.writeText(result); } catch (_) {} };
 
   return (
     <div className="card">
@@ -75,12 +83,15 @@ export default function Converter() {
         </select>
       </div>
       <div className="result">
+        <button className="copy-btn" type="button" aria-label="結果をコピー" title="コピー" onClick={onCopy} disabled={!result || result==='—'}>⧉</button>
         <div className="label">{t('result')}</div>
         <div className="value">{loading ? '…' : result}</div>
+        {lastUpdate && (
+          <div className="result-updated">更新: {new Date(lastUpdate.ts).toLocaleTimeString('ja-JP', { hour: '2-digit', minute: '2-digit' })}（{lastUpdate.source}）</div>
+        )}
         {err && <div className="error">{err}</div>}
       </div>
       <p className="note">{t('note')}</p>
     </div>
   );
 }
-
