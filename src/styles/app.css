@@ -28,20 +28,7 @@ body{
 .brand-text{ font-size:18px; }
 
 /* Language toggle */
-.lang-toggle{
-  display:flex; gap:8px; background:#fff; padding:6px; border-radius:14px; border:1px solid var(--border);
-  box-shadow: var(--shadow);
-}
-.lang-btn{
-  display:flex; align-items:center; gap:8px;
-  padding:8px 12px; border-radius:10px; border:1px solid transparent; background:transparent;
-  cursor:pointer; color:var(--text); font-weight:700;
-}
-.lang-btn:hover{ background:#fafbff; }
-.lang-btn.active{ background:var(--accent); color:#fff; border-color:transparent; }
-.lang-btn .flag{ font-size:16px; line-height:1; }
-.lang-btn .short{ display:none; }
-@media (max-width:460px){ .lang-btn .full{ display:none; } .lang-btn .short{ display:inline; } }
+/* 言語トグル撤去（関連スタイルを整理） */
 
 /* Layout */
 .page{ min-height:100%; display:flex; flex-direction:column; }
