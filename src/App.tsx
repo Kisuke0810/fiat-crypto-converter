@@ -27,7 +27,7 @@ function AppShell({ lang, onChange }: { lang: 'ja'|'en'; onChange: (l:'ja'|'en')
           <p className="sub">Simple • Fast • Accurate*</p>
         </section>
 
-        <Converter />
+        <Converter lang={lang} />
         <p className="note">* {t('note')}</p>
       </main>
 

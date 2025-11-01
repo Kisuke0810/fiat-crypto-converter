@@ -3,7 +3,7 @@ import type { Fiat, CoinSymbol } from '../types';
 import { TOKENS, findToken } from '../lib/tokens';
 import { getPrice } from '../lib/pricing';
 import { toFixedFloor } from '../lib/number';
-import { t, getLang } from '../i18n';
+import { t } from '../i18n';
 
 type Mode = 'fiatToCoin' | 'coinToFiat';
 const FIATS: { value: Fiat; label: string }[] = [
@@ -12,8 +12,7 @@ const FIATS: { value: Fiat; label: string }[] = [
   { value: 'eur', label: 'EUR（Euro）' },
 ];
 
-export default function Converter() {
-  const lang = getLang() as 'ja' | 'en';
+export default function Converter({ lang }: { lang: 'ja'|'en' }) {
   const [mode, setMode] = React.useState<Mode>('fiatToCoin');
   const [fiat, setFiat] = React.useState<Fiat>('jpy');
   const [coin, setCoin] = React.useState<CoinSymbol>('USDT');
