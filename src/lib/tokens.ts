@@ -1,4 +1,4 @@
-import { TokenDef } from '../types';
+import type { TokenDef } from '../types';
 export const TOKENS: TokenDef[] = [
   { symbol: 'BTC',  label: 'BTC (Bitcoin)',    coingeckoId: 'bitcoin' },
   { symbol: 'ETH',  label: 'ETH (Ethereum)',   coingeckoId: 'ethereum' },
@@ -14,4 +14,3 @@ export const TOKENS: TokenDef[] = [
 ];
 export const findToken = (sym: string): TokenDef | undefined =>
   TOKENS.find(t => t.symbol.toLowerCase() === sym.toLowerCase());
-

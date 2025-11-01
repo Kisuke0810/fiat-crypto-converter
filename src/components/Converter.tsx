@@ -1,9 +1,9 @@
 import React from 'react';
-import { Fiat, CoinSymbol } from '../types';
+import type { Fiat, CoinSymbol } from '../types';
 import { TOKENS, findToken } from '../lib/tokens';
 import { getPrice } from '../lib/pricing';
 import { toFixedFloor } from '../lib/number';
-import { t, getLang } from '../i18n';
+import { t } from '../i18n';
 
 type Mode = 'fiatToCoin' | 'coinToFiat';
 const FIATS: { value: Fiat; label: string }[] = [
@@ -12,7 +12,7 @@ const FIATS: { value: Fiat; label: string }[] = [
   { value: 'eur', label: 'EUR（Euro）' },
 ];
 
-export default function Converter() {
+export default function Converter({ lang }: { lang: 'ja'|'en' }) {
   const [mode, setMode] = React.useState<Mode>('fiatToCoin');
   const [fiat, setFiat] = React.useState<Fiat>('jpy');
   const [coin, setCoin] = React.useState<CoinSymbol>('USDT');
@@ -33,14 +33,15 @@ export default function Converter() {
     if (!pr.ok || !pr.price?.[fiat]) { setErr(t('errorFetch')); return; }
     const price = pr.price[fiat];
     const out = mode === 'fiatToCoin' ? val / price : val * price;
+    const isJA = lang === 'ja';
     setResult(
       mode === 'fiatToCoin'
         ? `${toFixedFloor(out)} ${coin}`
-        : `${getLang() === 'ja' ? '¥' : ''}${toFixedFloor(out)} ${fiat.toUpperCase()}`
+        : `${isJA ? '¥' : ''}${toFixedFloor(out)} ${fiat.toUpperCase()}`
     );
-  }, [amount, coin, fiat, mode]);
+  }, [amount, coin, fiat, mode, lang]);
 
-  React.useEffect(() => { const id = setTimeout(compute, 120); return () => clearTimeout(id); }, [compute]);
+  React.useEffect(() => { const id = setTimeout(compute, 60); return () => clearTimeout(id); }, [compute]);
   React.useEffect(() => {
     const id = setInterval(() => { if (document.visibilityState === 'visible') compute(); }, 30000);
     return () => clearInterval(id);
@@ -83,4 +84,3 @@ export default function Converter() {
     </div>
   );
 }
-

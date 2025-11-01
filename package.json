@@ -5,6 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:host": "vite --host --port 5173",
+    "dev:local": "vite --host 127.0.0.1 --port 5173",
+    "dev:alt": "vite --host 127.0.0.1 --port 5174",
     "build": "vite build",
     "preview": "vite preview",
     "test": "vitest --environment jsdom"

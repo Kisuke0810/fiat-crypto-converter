@@ -1,24 +1,18 @@
 import React from "react";
-import { getLang, setLang } from "../i18n";
 
 type Lang = "ja" | "en";
 const labels: Record<Lang, { short: string; full: string; flag: string }> = {
-  ja: { short: "JA", full: "日本語", flag: "🇯🇵" },
+  ja: { short: "JA", full: "日本語",  flag: "🇯🇵" },
   en: { short: "EN", full: "English", flag: "🇺🇸" },
 };
 
-export default function LanguageToggle() {
-  const [lang, setL] = React.useState<Lang>(getLang());
-
-  const onChange = (next: Lang) => {
-    setL(next);
-    setLang(next);
-  };
-
+export default function LanguageToggle(
+  { value, onChange }: { value: Lang; onChange: (l: Lang) => void }
+) {
   return (
     <div className="lang-toggle" role="group" aria-label="Language">
       {(["ja", "en"] as Lang[]).map((k) => {
-        const active = lang === k;
+        const active = value === k;
         const label = labels[k];
         return (
           <button
