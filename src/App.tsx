@@ -42,7 +42,7 @@ export default function App() {
   // ★ アプリ唯一の言語状態（初期値はi18nの保存値/デフォルト）
   const [lang, setAppLang] = React.useState<'ja'|'en'>(getLang());
 
-  // ★ 辞書側へ同期 + タイトル即時反映 + 履歴復元（bfcache/戻る進む/タブ復帰）対策
+  // ★ 辞書側へ同期 + タイトル即時反映（言語変更時のみ）
   React.useEffect(() => {
     // i18nの現在値を同期
     i18nSetLang(lang);
@@ -56,23 +56,8 @@ export default function App() {
 
     // 初回 & 言語変更直後
     applyTitle();
-
-    // bfcache 復帰
-    const onShow = (e: any) => { if (e && e.persisted) applyTitle(); };
-    // 戻る/進む
-    const onPop  = () => applyTitle();
-    // タブ復帰
-    const onVis  = () => { if (document.visibilityState === 'visible') applyTitle(); };
-
-    window.addEventListener('pageshow', onShow as any);
-    window.addEventListener('popstate', onPop);
-    document.addEventListener('visibilitychange', onVis);
-
-    return () => {
-      window.removeEventListener('pageshow', onShow as any);
-      window.removeEventListener('popstate', onPop);
-      document.removeEventListener('visibilitychange', onVis);
-    };
+    // ここでは言語変更時のみ更新し、初期は index.html の INSTANT_TITLE v2 に任せる
+    return () => {};
   }, [lang]);
 
   return (

@@ -2,6 +2,24 @@
 <html lang="ja">
   <head>
     <meta charset="UTF-8" />
+    <!-- INSTANT_TITLE v2 -->
+    <script>
+      (function () {
+        try {
+          // 保存言語 or ブラウザ言語で初期化（ja / en）
+          var saved = localStorage.getItem('lang');
+          var nav = (navigator.language || '').toLowerCase();
+          var code = saved ? String(saved).toLowerCase() : (nav.startsWith('ja') ? 'ja' : 'en');
+          // html@lang を先に切り替え（フォント等の FOUT を抑える）
+          document.documentElement.setAttribute('lang', code);
+          // タイトル即時反映（React マウント前に確定）
+          document.title = code === 'ja'
+            ? '法定通貨 ⇄ 暗号資産 かんたん換算'
+            : 'Fiat ⇄ Crypto Quick Converter';
+        } catch (_) { /* no-op */ }
+      })();
+    </script>
+    <!-- /INSTANT_TITLE v2 -->
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <title>Fiat ⇄ Crypto Converter</title>
