@@ -8,8 +8,11 @@ export default function App() {
   const [lang, setL] = React.useState<'ja' | 'en'>('ja');
   React.useEffect(() => { setLang(lang); }, [lang]);
 
+  // NOTE(bfcache):
   // 言語変更時に html@lang と document.title を適用し、
-  // bfcache 復帰（pageshow persisted）でも再適用する。
+  // ブラウザの戻る/進むで bfcache から復帰した際（pageshow with persisted=true）にも
+  // タイトルが古いまま残らないよう、pageshow で同じ適用を再実行する。
+  // idempotent（冪等）なため重複適用の副作用はありません。
   React.useEffect(() => {
     const apply = (l: 'ja' | 'en') => {
       document.documentElement.setAttribute('lang', l);
