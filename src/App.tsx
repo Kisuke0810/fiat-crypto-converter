@@ -1,35 +1,25 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import Converter from './components/Converter';
-import LanguageToggle from './components/LanguageToggle';
 import './styles/app.css';
-import { setLang, t, getLang } from './i18n';
+// i18n removed (ja-only)
 
 export default function App() {
-  const [lang, setL] = React.useState<'ja' | 'en'>('ja');
-  React.useEffect(() => { setLang(lang); }, [lang]);
 
-  // NOTE(bfcache):
-  // 言語変更時に html@lang と document.title を適用し、
-  // ブラウザの戻る/進むで bfcache から復帰した際（pageshow with persisted=true）にも
-  // タイトルが古いまま残らないよう、pageshow で同じ適用を再実行する。
-  // idempotent（冪等）なため重複適用の副作用はありません。
-  React.useEffect(() => {
-    const apply = (l: 'ja' | 'en') => {
-      document.documentElement.setAttribute('lang', l);
-      document.title = l === 'ja'
-        ? '法定通貨 ⇄ 暗号資産 かんたん換算'
-        : 'Fiat ⇄ Crypto Quick Converter';
-    };
-    // 初期 & 言語変更時に適用（i18n側が外部で変わった場合も考慮）
-    apply((typeof getLang === 'function' ? getLang() : lang) as 'ja' | 'en');
-    const onPageShow = (e: PageTransitionEvent) => {
-      if ((e as any).persisted) {
-        apply((typeof getLang === 'function' ? getLang() : lang) as 'ja' | 'en');
+  // 日本語固定：タイトル/HTML lang を即時セット + bfcache 復帰時に再適用
+  useEffect(() => {
+    const apply = () => {
+      document.title = '法定通貨 ⇄ 暗号資産 かんたん換算';
+      if (document.documentElement.lang !== 'ja') {
+        document.documentElement.lang = 'ja';
       }
     };
-    window.addEventListener('pageshow', onPageShow);
-    return () => window.removeEventListener('pageshow', onPageShow);
-  }, [lang]);
+    apply();
+    const onPageShow = (e: PageTransitionEvent) => {
+      if ((e as any).persisted) apply();
+    };
+    window.addEventListener('pageshow', onPageShow as any);
+    return () => window.removeEventListener('pageshow', onPageShow as any);
+  }, []);
 
   return (
     <div className="page">
@@ -38,18 +28,18 @@ export default function App() {
           <div className="logo">₿</div>
           <div className="brand-text">Fiat ⇄ Crypto</div>
         </div>
-        <LanguageToggle />
+        
       </header>
 
       <main className="container">
         <section className="hero">
-          <h1 className="headline">{t('title')}</h1>
-          <p className="sub">Simple • Fast • Accurate*</p>
+          <h1 className="headline">法定通貨 ⇄ 暗号資産 かんたん換算</h1>
+          <p className="sub">Simple・Fast・Accurate*</p>
         </section>
 
         <Converter />
 
-        <p className="note">* {t('note')}</p>
+        <p className="note">* 参考計算です。実際の購入レートやスプレッド・手数料により差が出ます。一部の銘柄は未対応の場合があります。</p>
       </main>
 
       <footer className="footer">
