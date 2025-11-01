@@ -2,8 +2,7 @@ import React from 'react';
 import Converter from './components/Converter';
 import LanguageToggle from './components/LanguageToggle';
 import './styles/app.css';
-import { setLang as i18nSetLang, getLang } from './i18n';
-import { I18nProvider, useI18n } from './i18n/react';
+import { t, setLang as i18nSetLang, getLang } from './i18n';
 
 // タイトル文言（UIテキストは既存のまま。タイトルのみここで管理）
 const PAGE_TITLES: Record<'ja' | 'en', string> = {
@@ -12,7 +11,6 @@ const PAGE_TITLES: Record<'ja' | 'en', string> = {
 };
 
 function AppShell({ lang, onChange }: { lang: 'ja'|'en'; onChange: (l:'ja'|'en')=>void }) {
-  const { t } = useI18n(); // 言語変更で即再レンダ
   return (
     <div className="page">
       <header className="appbar">
@@ -78,8 +76,6 @@ export default function App() {
   }, [lang]);
 
   return (
-    <I18nProvider lang={lang}>
-      <AppShell lang={lang} onChange={setAppLang} />
-    </I18nProvider>
+    <AppShell lang={lang} onChange={setAppLang} />
   );
 }
