@@ -6,7 +6,7 @@ import { setLang as i18nSetLang, getLang } from './i18n';
 import { I18nProvider, useI18n } from './i18n/react';
 
 // タイトル文言（UIテキストは既存のまま。タイトルのみここで管理）
-const PAGE_TITLES: Record<string, string> = {
+const PAGE_TITLES: Record<'ja' | 'en', string> = {
   ja: '法定通貨 ⇄ 暗号資産 かんたん換算',
   en: 'Fiat ⇄ Crypto Quick Converter',
 };
@@ -50,9 +50,10 @@ export default function App() {
     i18nSetLang(lang);
 
     const applyTitle = () => {
-      const now = String(getLang()).toLowerCase();
-      const key = now.startsWith('ja') ? 'ja' : 'en';
-      document.title = PAGE_TITLES[key];
+      // getLang() と state のどちらでも判定可能にし、言語コードの揺れを吸収
+      const raw = (typeof getLang === 'function' ? getLang() : lang || '').toString().toLowerCase();
+      const isJa = ['ja', 'jp', 'ja-jp', 'ja_jp'].includes(raw);
+      document.title = PAGE_TITLES[isJa ? 'ja' : 'en'];
     };
 
     // 初回 & 言語変更直後
