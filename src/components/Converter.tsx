@@ -1,8 +1,8 @@
 import React from 'react';
 import { Fiat, CoinSymbol } from '../types';
 import { TOKENS, findToken } from '../lib/tokens';
-import { getPrice } from '../lib/pricing';
-import { t } from '../i18n';
+import { formatCrypto } from '../lib/number';
+import { t, getLang } from '../i18n';
 import { formatAmount, ensureConsistentUnits } from '../utils/formatter';
 
 type Mode = 'fiatToCoin' | 'coinToFiat';
@@ -20,8 +20,7 @@ export default function Converter() {
   const [result, setResult] = React.useState<string>('—');
   const [loading, setLoading] = React.useState(false);
   const [err, setErr] = React.useState<string | null>(null);
-  const [lastUpdated, setLastUpdated] = React.useState<string | null>(null);
-  const [lastSource, setLastSource] = React.useState<'CoinGecko' | 'CMC' | null>(null);
+  const [lastUpdate, setLastUpdate] = React.useState<{ ts: number; source: 'CoinGecko' | 'CMC' } | null>(null);
 
   const compute = React.useCallback(async () => {
     setErr(null);
