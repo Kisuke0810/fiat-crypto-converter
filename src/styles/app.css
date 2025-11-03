@@ -1,0 +1,29 @@
+:root { --bg:#f7f8ff; --card:#fff; --accent:#5b7cff; --border:#e3e6ef; --text:#222; --sub:#556; }
+*{ box-sizing: border-box; }
+html,body,#root{ height:100%; }
+body{
+  margin:0; background:var(--bg); color:var(--text);
+  font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,"Noto Sans JP","Hiragino Kaku Gothic ProN","Yu Gothic",Meiryo,sans-serif;
+}
+.app-shell{ min-height:100%; }
+.app-header{ padding:28px 16px; text-align:center; font-weight:900; font-size:28px; letter-spacing:.3px; color:#1a1f36; }
+.app-main{ display:flex; justify-content:center; align-items:flex-start; padding:0 16px 48px; }
+.app-container{ width:100%; max-width:900px; margin:0 auto; }
+
+/* 押しやすい大きめ UI */
+label{ font-size:14px; color:#445 }
+input, select, button { height:48px; font-size:18px; border-radius:12px; border:1px solid var(--border); padding:10px 12px; background:#fff; }
+input:focus, select:focus { outline:none; border-color:var(--accent); box-shadow:0 0 0 3px rgba(91,124,255,.15); }
+button { cursor:pointer; }
+.big-input{ font-size:18px; padding:12px 14px; height:48px; border-radius:12px; border:1px solid var(--border); outline: none; background:#fff; }
+.big-input:focus{ border-color:var(--accent); box-shadow:0 0 0 3px rgba(58,102,255,.12) }
+
+/* 結果の見た目 */
+.result-box{ position:relative; padding:22px; border-radius:14px; background:linear-gradient(180deg,#fafcff,#f4f6ff); border:1px dashed var(--border); }
+.result-line{ display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; }
+.result-value{ font-size:34px; font-weight:800; letter-spacing:.3px; }
+.result-unit{ font-size:18px; color:var(--sub); font-weight:600; }
+.result-meta{ margin-top:8px; font-size:12px; color:#6b7280; }
+
+/* コピーBTN（右上） */
+.copy-btn{ position:absolute; top:10px; right:10px; padding:8px 10px; border-radius:10px; border:1px solid var(--border); background:#fff; font-size:12px; }
