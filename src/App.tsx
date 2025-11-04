@@ -1,6 +1,5 @@
 import { useEffect } from 'react';
 import Converter from './components/Converter';
-import { t } from './i18n';
 
 export default function App() {
   useEffect(() => {
@@ -10,7 +9,10 @@ export default function App() {
 
   return (
     <div className="app-shell">
-      <header className="app-header">{t('title')}</header>
+      <header className="app-header">
+        <h1 className="title-main">法定通貨 ⇄ 暗号資産</h1>
+        <div className="title-sub">かんたん換算</div>
+      </header>
       <main className="app-main">
         <div className="app-container">
           <Converter />

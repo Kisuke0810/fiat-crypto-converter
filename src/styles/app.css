@@ -27,3 +27,16 @@ button { cursor:pointer; }
 
 /* コピーBTN（右上） */
 .copy-btn{ position:absolute; top:10px; right:10px; padding:8px 10px; border-radius:10px; border:1px solid var(--border); background:#fff; font-size:12px; }
+
+/* ===== Title (2段・中央) ===== */
+.title-main{
+  margin: 12px 0 2px;
+  font-size: clamp(20px, 5.6vw, 32px);
+  line-height: 1.1;
+  letter-spacing: .02em;
+}
+.title-sub{
+  font-size: clamp(16px, 4.6vw, 24px);
+  line-height: 1.2;
+  opacity: .9;
+}

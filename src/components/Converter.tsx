@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import type { Fiat, CoinSymbol } from '../types/index.ts';
 import { TOKENS, findToken } from '../lib/tokens';
 import { getPrice } from '../lib/pricing';
-import { toFixedFloor } from '../lib/number';
+import { toFixedFloor, addThousands, stripThousands, formatFiat } from '../lib/number';
 import { t } from '../i18n';
 import CopyButton from './atoms/CopyButton';
 
@@ -39,7 +39,7 @@ export default function Converter() {
 
   const compute = useCallback(async () => {
     setErr(null);
-    const val = Number(amount);
+    const val = Number(stripThousands(amount));
     if (!Number.isFinite(val) || val <= 0) { setResult('—'); return; }
 
     const def = findToken(coin);
@@ -58,7 +58,7 @@ export default function Converter() {
       setResult(`${txt} ${coin}`);
       setResultUnit(coin);
     } else {
-      const txt = formatOut(out, 'fiat');
+      const txt = formatFiat(out, fiat);
       const f = fiat.toUpperCase();
       setResult(`${txt} ${f}`);
       setResultUnit(f);
@@ -117,7 +117,26 @@ export default function Converter() {
       <div style={{display:'grid', gap:10, margin:'14px 0'}}>
         <label>{mode === 'fiatToCoin' ? t('amount') : t('quantity')}</label>
         <input className="big-input" inputMode="decimal" value={amount}
-          onChange={e => setAmount(e.target.value)}
+          onChange={e => {
+            const raw = e.target.value;
+            setAmount(raw.replace(/[^\d.,]/g, ''));
+          }}
+          onBlur={() => {
+            // 入力の見やすさ向上：JPY かつ 法定通貨入力時は3桁区切り
+            if (fiat === 'jpy' && mode === 'fiatToCoin') {
+              const v = stripThousands(amount);
+              if (v) setAmount(addThousands(v));
+            }
+          }}
+          onFocus={(e) => {
+            // 編集しやすいようにカンマ除去
+            const v = stripThousands(e.currentTarget.value);
+            setAmount(v);
+            requestAnimationFrame(() => {
+              const el = e.currentTarget;
+              el.selectionStart = el.selectionEnd = el.value.length;
+            });
+          }}
           placeholder={mode === 'fiatToCoin' ? '5000' : '33.751856'} />
       </div>
 
