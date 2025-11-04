@@ -71,3 +71,9 @@ export default defineConfig([
   },
 ])
 ```
+
+## Source of truth
+
+The application code in this repository under `apps/fiat-crypto-converter/src` is the single source of truth. A previously duplicated `./src` at the repository root was investigated and safely removed to avoid drift and confusion.
+
+See `docs/root-src-removal-log.md` for the investigation/build logs and removal steps.
