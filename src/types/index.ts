@@ -2,7 +2,7 @@ export type Fiat = 'jpy' | 'usd' | 'eur';
 
 export type CoinSymbol =
   | 'BTC' | 'ETH' | 'USDT' | 'USDC' | 'SOL' | 'XRP' | 'BNB' | 'ADA' | 'DOGE' | 'TRX'
-  | 'AUBE' | 'SWK';
+  | 'SWK';
 
 export interface PriceMap { jpy?: number; usd?: number; eur?: number; }
 
