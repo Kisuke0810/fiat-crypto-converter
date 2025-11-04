@@ -1,9 +1,9 @@
-import React from 'react';
+import { useEffect } from 'react';
 import Converter from './components/Converter';
 import { t } from './i18n';
 
 export default function App() {
-  React.useEffect(() => {
+  useEffect(() => {
     document.documentElement.lang = 'ja';
     document.title = '法定通貨 ⇄ 暗号資産 かんたん換算';
   }, []);

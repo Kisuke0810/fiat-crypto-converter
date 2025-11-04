@@ -1,4 +1,4 @@
-import React from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import type { Fiat, CoinSymbol } from '../types/index.ts';
 import { TOKENS, findToken } from '../lib/tokens';
 import { getPrice } from '../lib/pricing';
@@ -15,15 +15,15 @@ const FIATS: { value: Fiat; label: string }[] = [
 ];
 
 export default function Converter() {
-  const [mode, setMode]   = React.useState<Mode>('fiatToCoin');
-  const [fiat, setFiat]   = React.useState<Fiat>('jpy');
-  const [coin, setCoin]   = React.useState<CoinSymbol>('USDT');
-  const [amount, setAmount] = React.useState('5000');
-  const [result, setResult] = React.useState('—');
-  const [resultUnit, setResultUnit] = React.useState<string>('');
-  const [lastUpdated, setLastUpdated] = React.useState<string>('');
-  const [loading, setLoading] = React.useState(false);
-  const [err, setErr] = React.useState<string | null>(null);
+  const [mode, setMode]   = useState<Mode>('fiatToCoin');
+  const [fiat, setFiat]   = useState<Fiat>('jpy');
+  const [coin, setCoin]   = useState<CoinSymbol>('USDT');
+  const [amount, setAmount] = useState('5000');
+  const [result, setResult] = useState('—');
+  const [resultUnit, setResultUnit] = useState<string>('');
+  const [lastUpdated, setLastUpdated] = useState<string>('');
+  const [loading, setLoading] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
 
   const fmtHM = (d: Date) => {
     const hh = String(d.getHours()).padStart(2,'0');
@@ -37,7 +37,7 @@ export default function Converter() {
     return toFixedFloor(n, 2).replace(/\.00$/, '');
   };
 
-  const compute = React.useCallback(async () => {
+  const compute = useCallback(async () => {
     setErr(null);
     const val = Number(amount);
     if (!Number.isFinite(val) || val <= 0) { setResult('—'); return; }
@@ -66,12 +66,12 @@ export default function Converter() {
     setLastUpdated(fmtHM(new Date()));
   }, [amount, coin, fiat, mode]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const id = setTimeout(compute, 100);
     return () => clearTimeout(id);
   }, [compute]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const id = setInterval(() => {
       if (document.visibilityState === 'visible') compute();
     }, 30000);

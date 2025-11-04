@@ -1,5 +1,3 @@
-import React from 'react';
-
 type Props = { text: string; ariaLabel?: string };
 
 export default function CopyButton({ text, ariaLabel = '結果をコピー' }: Props) {
@@ -12,4 +10,3 @@ export default function CopyButton({ text, ariaLabel = '結果をコピー' }: P
     </button>
   );
 }
-
