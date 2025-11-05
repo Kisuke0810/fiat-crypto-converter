@@ -40,3 +40,24 @@ button { cursor:pointer; }
   line-height: 1.2;
   opacity: .9;
 }
+
+/* ===== Copy toast ===== */
+.copy-toast{
+  position: fixed;       /* 親のoverflowに影響されない（常に画面に出す） */
+  right: 14px;
+  top: 14px;            /* 画面右上に出す（スマホでも視認性◎） */
+  z-index: 9999;        /* 最前面へ */
+  padding: 8px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  box-shadow: 0 8px 22px rgba(0,0,0,.14);
+  animation: toast-in .18s ease-out, toast-out .22s ease-in forwards;
+  animation-delay: 0s, 1s; /* 合計 ~1.2sでフェードアウト */
+  pointer-events: none;  /* クリックの邪魔をしない */
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+.copy-toast--ok{ background: rgba(56,142,60,.92); color:#fff; }
+.copy-toast--ng{ background: rgba(211,47,47,.94); color:#fff; }
+@keyframes toast-in { from{opacity:0; transform: translateY(6px) scale(.98);} to{opacity:1; transform: translateY(0) scale(1);} }
+@keyframes toast-out { to{opacity:0; transform: translateY(-4px) scale(.98);} }
