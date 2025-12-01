@@ -22,6 +22,8 @@ export default function Converter() {
   const [result, setResult] = useState('—');
   const [resultUnit, setResultUnit] = useState<string>('');
   const [lastUpdated, setLastUpdated] = useState<string>('');
+  const [source, setSource] = useState<string>('');
+  const [cachedFlag, setCachedFlag] = useState<boolean>(false);
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState<string | null>(null);
 
@@ -64,6 +66,8 @@ export default function Converter() {
       setResultUnit(f);
     }
     setLastUpdated(fmtHM(new Date()));
+    setSource(pr.source || '');
+    setCachedFlag(Boolean(pr.cached));
   }, [amount, coin, fiat, mode]);
 
   useEffect(() => {
@@ -160,7 +164,7 @@ export default function Converter() {
         </div>
         {!loading && result !== '—' && <CopyButton text={result} />}
         {lastUpdated && (
-          <div className="result-meta">更新: {lastUpdated}（CoinGecko）</div>
+          <div className="result-meta">更新: {lastUpdated}（{source ? source.toUpperCase() : '—'}{cachedFlag ? '・cache' : ''}）</div>
         )}
         {err && <div className="error" style={{marginTop:8}}>{err}</div>}
       </div>
