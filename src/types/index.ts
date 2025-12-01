@@ -11,6 +11,7 @@ export interface PriceResult {
   source: 'coingecko' | 'cmc' | 'metaxpro' | 'custom' | 'unknown';
   price?: PriceMap;
   error?: string;
+  cached?: boolean;
 }
 
 export interface TokenDef {
