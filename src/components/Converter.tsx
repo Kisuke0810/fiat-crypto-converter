@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import type { Fiat, CoinSymbol } from '../types/index.ts';
 import { TOKENS, findToken } from '../lib/tokens';
 import { getPrice } from '../lib/pricing';
-import { toFixedFloor, addThousands, stripThousands, formatFiat } from '../lib/number';
+import { toFixedFloor, formatFiat } from '../lib/number';
 import { t } from '../i18n';
 import CopyButton from './atoms/CopyButton';
 
@@ -14,11 +14,26 @@ const FIATS: { value: Fiat; label: string }[] = [
   { value: 'eur', label: 'EUR（Euro）' },
 ];
 
+// 全角数字と全角ドットを半角に寄せる
+function toHalfWidthNumber(value: string): string {
+  return value.replace(/[０-９．]/g, (ch) => {
+    const code = ch.charCodeAt(0);
+    if (code >= 0xff10 && code <= 0xff19) {
+      return String.fromCharCode(code - 0xff10 + 0x30);
+    }
+    if (ch === '．') return '.';
+    return ch;
+  });
+}
+
 export default function Converter() {
   const [mode, setMode]   = useState<Mode>('fiatToCoin');
   const [fiat, setFiat]   = useState<Fiat>('jpy');
   const [coin, setCoin]   = useState<CoinSymbol>('USDT');
-  const [amount, setAmount] = useState('5000');
+  // 入力欄の生値（空文字許容）
+  const [rawAmount, setRawAmount] = useState<string>('');
+  // 計算用（パース結果）。null は未入力/不正扱い
+  const [amount, setAmount] = useState<number | null>(null);
   const [result, setResult] = useState('—');
   const [resultUnit, setResultUnit] = useState<string>('');
   const [lastUpdated, setLastUpdated] = useState<string>('');
@@ -41,8 +56,8 @@ export default function Converter() {
 
   const compute = useCallback(async () => {
     setErr(null);
-    const val = Number(stripThousands(amount));
-    if (!Number.isFinite(val) || val <= 0) { setResult('—'); return; }
+    const val = amount;
+    if (val == null || !Number.isFinite(val) || val <= 0) { setResult('—'); return; }
 
     const def = findToken(coin);
     if (!def) { setErr(t('unsupported')); return; }
@@ -120,28 +135,30 @@ export default function Converter() {
 
       <div style={{display:'grid', gap:10, margin:'14px 0'}}>
         <label>{mode === 'fiatToCoin' ? t('amount') : t('quantity')}</label>
-        <input className="big-input" inputMode="decimal" value={amount}
-          onChange={e => {
+        <input
+          className="big-input"
+          type="text"
+          inputMode="decimal"
+          value={rawAmount}
+          onChange={(e) => {
             const raw = e.target.value;
-            setAmount(raw.replace(/[^\d.,]/g, ''));
-          }}
-          onBlur={() => {
-            // 入力の見やすさ向上：JPY かつ 法定通貨入力時は3桁区切り
-            if (fiat === 'jpy' && mode === 'fiatToCoin') {
-              const v = stripThousands(amount);
-              if (v) setAmount(addThousands(v));
+            const half = toHalfWidthNumber(raw);
+            if (half === '') {
+              setRawAmount('');
+              setAmount(null);
+              return;
             }
+            const decimalRegex = /^\d*\.?\d*$/;
+            if (!decimalRegex.test(half)) {
+              // 無効な入力は無視（前の値を維持）
+              return;
+            }
+            setRawAmount(half);
+            const parsed = parseFloat(half);
+            if (Number.isNaN(parsed)) setAmount(null); else setAmount(parsed);
           }}
-          onFocus={(e) => {
-            // 編集しやすいようにカンマ除去
-            const v = stripThousands(e.currentTarget.value);
-            setAmount(v);
-            requestAnimationFrame(() => {
-              const el = e.currentTarget;
-              el.selectionStart = el.selectionEnd = el.value.length;
-            });
-          }}
-          placeholder={mode === 'fiatToCoin' ? '5000' : '33.751856'} />
+          placeholder="ここに数字を入力してください"
+        />
       </div>
 
       <div style={{display:'grid', gap:10, margin:'14px 0'}}>
